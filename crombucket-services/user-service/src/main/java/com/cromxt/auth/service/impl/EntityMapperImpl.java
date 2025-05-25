@@ -17,7 +17,7 @@ public class EntityMapperImpl implements EntityMapperService {
                 userEntity.getEmail(),
                 userEntity.getFirstName(),
                 userEntity.getLastName(),
-                userEntity.getGender()
+                userEntity.getRole()
             );
     }
     

@@ -29,7 +29,7 @@ export class AuthService {
     });
   }
 
-  logout() {
+  removeAuthorization() {
     this.storage.remove('Authorization');
     this.authorization.set(null);
   }

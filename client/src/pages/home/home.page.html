@@ -1,3 +1,6 @@
-<div class="text-6xl">
-  
+<div>
+  <h1>Welcome to CromBucket</h1>
+  @if (isLoggedIn()) {
+    <button-component [buttonName]="'Dashboard'" buttonType="navigation" [navigationUrl]="'/dashboard'"></button-component>
+  }
 </div>

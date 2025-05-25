@@ -17,6 +17,13 @@ import {
 
 @Component({
   selector: 'input-component',
+  styles: [
+    `
+      :host{
+        width: 100%;
+      }
+    `,
+  ],
   template: `
     <div class="input">
       <label class="input-label" [for]="'id-' + title()">{{ title() }}</label>

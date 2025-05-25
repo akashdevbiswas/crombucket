@@ -1,29 +1,84 @@
-import { Component, Inject, input, PLATFORM_ID } from '@angular/core';
+import { Component, effect, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { ButtonComponent } from './button.component';
-import { AuthService } from '../services/auth.service';
-import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { Users, UserService } from '../services/users.service';
+import { ButtonComponent } from './button.component';
 
 @Component({
   selector: 'profile-component',
+  styles: [
+    `
+      :host {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+      }
+    `,
+  ],
   template: `
-    <div class="w-[100px]">
-      <img
-        [ngSrc]="imageUrl"
-        [alt]="username()"
-        [height]="50"
-        [width]="50"
-        class="rounded-full object-contain"
-      />
+    @if(userData()!== null){
+    <button-component
+      classes="font-medium"
+      [buttonName]="'Logout'"
+      (onClick)="logout()"
+    >
+    </button-component>
+    <p class="uppercase cursor-pointer">
+      {{ userData()?.username }}
+    </p>
+    <div class="h-12 w-12 bg-blue-300 p-2 rounded-full relative cursor-pointer">
+      <span class="text-xl absolute top-1/2 left-1/2 -translate-1/2">
+        {{ userData()?.initials }}
+      </span>
     </div>
+    }@else { @if(router.url.includes('/auth')) { @if(router.url ===
+    '/auth/login') {
+    <button-component
+      [buttonName]="'Sign Up'"
+      [navigationUrl]="'/auth/register'"
+      [buttonType]="'navigation'"
+    ></button-component>
+    }@else{
+    <button-component
+      [buttonName]="'Sign In'"
+      [navigationUrl]="'/auth/login'"
+      [buttonType]="'navigation'"
+    ></button-component>
+    } }@else {
+    <button-component
+      [buttonName]="'Sign In'"
+      [navigationUrl]="'/auth'"
+      [buttonType]="'navigation'"
+    ></button-component>
+    } }
   `,
-  imports: [NgOptimizedImage],
+  imports: [ButtonComponent],
   standalone: true,
 })
 export class ProfileComponent {
-  imageUrl = input<string>('');
-  username = input.required<string>();
+  userData: WritableSignal<{
+    initials: string;
+    username: string;
+  } | null> = signal(null);
+
+  constructor(private userService: UserService, protected router: Router) {
+    effect(() => {
+      const user = this.userService.user();
+      if (user === null) {
+        this.userData.set(null);
+        return;
+      }
+      this.userData.set({
+        initials: user.firstName[0] + user.lastName[0],
+        username: user.username,
+      });
+    });
+  }
+
+  logout() {
+    this.userService.logout();
+    this.router.navigateByUrl('/auth');
+  }
 }
 
 @Component({
@@ -36,59 +91,13 @@ export class ProfileComponent {
       >
         Cromxt
       </p>
-      @if(router.url.includes('/auth')) { @if(router.url === '/auth/login') {
-      <button-component
-        [buttonName]="'Sign Up'"
-        [navigationUrl]="'/auth/register'"
-        [buttonType]="'navigation'"
-      ></button-component>
-      }@else{
-      <button-component
-        [buttonName]="'Sign In'"
-        [navigationUrl]="'/auth/login'"
-        [buttonType]="'navigation'"
-      ></button-component>
-      } }@else { @if(user) {
-
-      <profile-component
-        [username]="user.username"
-        [imageUrl]="user.profileImage"
-      ></profile-component>
-
-      }@else{
-      <button-component
-        [buttonName]="'Sign In'"
-        [navigationUrl]="'/auth'"
-        [buttonType]="'navigation'"
-      ></button-component>
-      } }
+      <profile-component></profile-component>
     </nav>
   `,
   standalone: true,
-  imports: [ButtonComponent, ProfileComponent],
+  imports: [ProfileComponent],
 })
 export class NavbarComponent {
   protected user: Users | null = null;
-  constructor(
-    protected router: Router,
-    protected authService: AuthService,
-    userService: UserService,
-    
-    @Inject(PLATFORM_ID) platFormId: Object
-  ) {
-    if (isPlatformBrowser(platFormId)) {
-      userService.fetchUser().subscribe({
-        next: (res) => {
-          const { status, body } = res;
-          if (status === 200 && body) {
-            this.user = body;
-          }
-        },
-        error: (err) => {
-          console.error(err);
-          router.navigateByUrl('/auth');
-        },
-      });
-    }
-  }
+  constructor(protected router: Router) {}
 }

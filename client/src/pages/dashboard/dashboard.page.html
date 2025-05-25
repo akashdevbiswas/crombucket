@@ -1,0 +1,14 @@
+@if(userService.user()?.role === 'USER'){ 
+  User Dashboard
+}@else if(userService.user()?.role === 'ADMIN'){
+<nav class="app-container mx-auto">
+  <ul class="flex items-center justify-between">
+    <li><a routerLink="storage-nodes" class="text-xl">Storage Nodes</a></li>
+    <li><a routerLink="clusters" class="text-xl">Clusters</a></li>
+    <li><a routerLink="regions" class="text-xl">Regions</a></li>
+  </ul>
+</nav>
+<div>
+  <router-outlet></router-outlet>
+</div>
+}
