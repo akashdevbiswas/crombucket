@@ -80,7 +80,7 @@ import {
           [formControl]="formControlName()"
         />
         @if (icon()) {
-        <span class="icon"><fa-icon [icon]="inputIcon"></fa-icon></span>
+        <span class="icon"></span>
         } }
       </div>
     </div>

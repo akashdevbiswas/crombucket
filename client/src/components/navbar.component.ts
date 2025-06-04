@@ -2,6 +2,7 @@ import { Component, effect, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Users, UserService } from '../services/users.service';
 import { ButtonComponent } from './button.component';
+import { AdminNavigationComponent } from './admin-navigation.component';
 
 @Component({
   selector: 'profile-component',
@@ -91,13 +92,26 @@ export class ProfileComponent {
       >
         Cromxt
       </p>
+      @if(isUserAdmin()){
+        <admin-navigation></admin-navigation>
+      }
       <profile-component></profile-component>
     </nav>
   `,
   standalone: true,
-  imports: [ProfileComponent],
+  imports: [ProfileComponent, AdminNavigationComponent],
 })
 export class NavbarComponent {
-  protected user: Users | null = null;
-  constructor(protected router: Router) {}
+  isUserAdmin: WritableSignal<boolean> = signal(false);
+  constructor(protected router: Router, private userService: UserService) {
+    effect(() => {
+      const user = this.userService.user();
+      if (user === null) {
+        this.isUserAdmin.set(false);
+        return;
+      }
+      this.isUserAdmin.set(user.role === 'ADMIN');
+      
+    })
+  }
 }
