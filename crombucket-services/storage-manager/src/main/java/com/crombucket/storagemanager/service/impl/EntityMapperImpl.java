@@ -6,7 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.crombucket.common.dtos.PageResponse;
+import com.crombucket.storagemanager.dtos.response.ClustersResponse;
 import com.crombucket.storagemanager.dtos.response.RegionResponse;
+import com.crombucket.storagemanager.models.Clusters;
 import com.crombucket.storagemanager.models.Regions;
 import com.crombucket.storagemanager.service.EntityMapper;
 
@@ -35,5 +37,17 @@ public class EntityMapperImpl implements EntityMapper {
     .content(data)
     .build();
   }
+
+  @Override
+  public ClustersResponse createClustersResponseFromClusters(Clusters clusters) {
+    return new ClustersResponse(
+      clusters.getId(),
+      clusters.getClusterCode(),
+      clusters.getAvailableSpaceInBytes(),
+      clusters.getCreatedAt()
+    );
+  }
+
+  
 
 }

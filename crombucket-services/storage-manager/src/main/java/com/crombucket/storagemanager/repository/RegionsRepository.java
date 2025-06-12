@@ -7,8 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.crombucket.storagemanager.models.Regions;
 
 public interface RegionsRepository extends JpaRepository<Regions,String> {
-
-
+  
   Page<Regions> findByRegionNameOrRegionCodeContainingIgnoreCase(String regionName, String regionCode , Pageable pageable);
 
 }

@@ -33,6 +33,9 @@ public class Clusters {
   @Column(unique = true, name = "cluster_code")
   private String clusterCode;
 
+  @Column(name = "available_space_in_bytes")
+  private Long availableSpaceInBytes;
+
   @CreationTimestamp
   private LocalDate createdAt;
 

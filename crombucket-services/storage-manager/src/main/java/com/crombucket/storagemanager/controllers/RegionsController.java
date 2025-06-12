@@ -2,7 +2,6 @@ package com.crombucket.storagemanager.controllers;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,7 @@ import com.crombucket.common.dtos.PageResponse;
 import com.crombucket.storagemanager.dtos.requests.RegionRequest;
 import com.crombucket.storagemanager.dtos.response.RegionResponse;
 import com.crombucket.storagemanager.service.RegionsService;
-import com.crombucket.storagemanager.utils.SortOrder;
+import com.crombucket.storagemanager.utils.SortOrders.SortDirection;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,8 +32,9 @@ public class RegionsController {
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "6") Integer size,
       @RequestParam(required = false, defaultValue = "") String search,
-      @RequestParam(required = false, defaultValue = "CREATED_AT") SortOrder sort) {
-    return ResponseEntity.ok().body(regionsService.getRegionsBy(page, size, search, sort));
+      @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+      @RequestParam(required = false, defaultValue = "ASC") SortDirection direction) {
+    return ResponseEntity.ok().body(regionsService.getRegionsBy(page, size, search, sortBy,direction));
   }
 
   @GetMapping(value = "/all")
