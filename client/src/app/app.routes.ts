@@ -3,9 +3,9 @@ import { HomePage } from '../pages/home/home.page';
 import { AuthPage } from '../pages/auth/auth.page';
 import { SignUpPage } from '../components/sign-up-form.component';
 import { SignInPage } from '../components/sign-in-form.component';
-import { StorageNodePage } from '../pages/storage-node/storage-node.page';
-import { ClusterPage } from '../pages/clusters/clusters.page';
-import { RegionPage } from '../pages/regions/regions.page';
+import { StorageNodeComponent } from '../components/storage-node.component';
+import { ClusterPage } from '../components/clusters.component';
+import { RegionComponent } from '../components/regions.component';
 import { DashboardPage } from '../pages/dashboard/dashboard.page';
 
 export const routes: Routes = [
@@ -38,7 +38,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'storage-nodes',
-        component: StorageNodePage,
+        component: StorageNodeComponent,
       },
       {
         path: 'clusters',
@@ -46,7 +46,7 @@ export const routes: Routes = [
       },
       {
         path: 'regions',
-        component: RegionPage,
+        component: RegionComponent,
       },
       {
         path: '',

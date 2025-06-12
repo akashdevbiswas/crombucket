@@ -3,6 +3,7 @@
 @theme {
   --color-primary: #3E3E3E;
   --color-secondary: #3B24E9;
+  --color-tertiary: #4B60E6;
   --color-base-white: #ffffff;
   --color-base-black: #090329;
 }
@@ -26,6 +27,10 @@
 
 body {
   @apply bg-base-white text-primary;
+}
+
+.margin_x{
+  @apply mx-[48px];
 }
 
 .input {

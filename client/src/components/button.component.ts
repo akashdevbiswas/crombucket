@@ -10,12 +10,12 @@ import {
   selector: 'button-component',
   template: `
   @if (buttonType() === 'navigation') {
-    <a (click)="onRoute()" [class]=" 'font-medium text-blue-700 hover:text-blue-800 hover:underline ' + buttonStyle+ ' ' + classes()">{{buttonName()}} <span><fa-icon [icon]="iconDefination()"></fa-icon></span></a>
+    <a (click)="onRoute()" [class]=" 'font-medium text-white hover:underline ' + buttonStyle+ ' ' + classes()">{{buttonName()}} <span><fa-icon [icon]="iconDefination()"></fa-icon></span></a>
   }@else {
     <button
       (click)="onClick.emit()"
       [class]="
-        ' text-white bg-blue-700 hover:bg-blue-800 ' + buttonStyle + ' '+
+        ' text-white bg-secondary ' + buttonStyle + ' '+
         classes()
       "
     >

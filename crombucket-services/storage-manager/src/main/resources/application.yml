@@ -2,7 +2,11 @@ spring:
   application:
     name: storage-manager
   config:
-    import: "configserver:http://localhost:8888"
-  cloud:
-    config:
-      profile: service
+    import: configserver:http://localhost:8888
+  jpa:
+    open-in-view: false
+  
+    
+    
+  
+    

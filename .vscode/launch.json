@@ -9,7 +9,17 @@
       "projectName": "config-server",
       "args": "",
       "envFile": "${workspaceFolder}/.env",
-      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=45875 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=config-server"
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=37397 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=config-server"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-CrombucketGatewayApplication<api-gateway>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.crombucket.gateway.CrombucketGatewayApplication",
+      "projectName": "api-gateway",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
     },
     {
       "type": "java",
@@ -19,14 +29,15 @@
       "mainClass": "com.cromxt.auth.UserServiceMain",
       "projectName": "user-service",
       "args": "",
-      "envFile": "${workspaceFolder}/.env"
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=33143 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=user-service"
     },
     {
       "type": "java",
-      "name": "Spring Boot-StorageManagerApplicationMain<storage-manager>",
+      "name": "Spring Boot-StorageManagerApplication<storage-manager>",
       "request": "launch",
       "cwd": "${workspaceFolder}",
-      "mainClass": "com.crombucket.storagemanager.StorageManagerApplicationMain",
+      "mainClass": "com.crombucket.storagemanager.StorageManagerApplication",
       "projectName": "storage-manager",
       "args": "",
       "envFile": "${workspaceFolder}/.env"

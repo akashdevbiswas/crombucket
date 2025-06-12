@@ -1,62 +1,56 @@
 package com.crombucket.storagemanager.config;
 
-
-import com.crombucket.storagemanager.filter.ApiKeyAuthenticationFilter;
-import com.cromxt.authentication.webflux.ReactiveJwtAuthenticationFilter;
-import com.cromxt.authentication.JwtService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.util.Objects;
+import com.cromxt.authentication.JwtService;
+import com.cromxt.authentication.servlet.JwtAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableReactiveMethodSecurity
-@EnableWebFluxSecurity
-@Slf4j
+@EnableMethodSecurity
 public class SecurityConfig {
 
+  private final JwtService jwtService;
 
-    private final JwtService jwtService;
-    private final Environment environment;
 
-    @Bean
-    SecurityWebFilterChain webFilterChain(ServerHttpSecurity security, ApplicationContext context){
+  @Bean
+  SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, Environment environment) throws Exception{
 
-        String redirectionUrl = environment.getProperty("TOKEN_EXPIRATION_REDIRECTION_URL", String.class);
-        String apiKey =  environment.getProperty("SERVICE_API_KEY",String.class);
+    String location = environment.getProperty("TOKEN_EXPIRATION_REDIRECTION_URL",String.class);
 
-        if(Objects.isNull(redirectionUrl) || Objects.isNull(apiKey)){
-            log.error("Service Key Or Redirection URL Not found.");
-            SpringApplication.exit(context,()->1);
-        }
+    assert location != null;
 
-        log.info("The auth url :{} ",redirectionUrl);
+    JwtAuthenticationFilter jwtfilter = new JwtAuthenticationFilter(jwtService,location);
 
-        ReactiveJwtAuthenticationFilter jwtAuthenticationFilter = new ReactiveJwtAuthenticationFilter(jwtService,redirectionUrl);
-        ApiKeyAuthenticationFilter apiKeyAuthenticationFilter = new ApiKeyAuthenticationFilter(apiKey);
+    return httpSecurity
+    .csrf(CsrfConfigurer::disable)
+    .cors(CorsConfigurer::disable)
+    .httpBasic(HttpBasicConfigurer::disable)
+    .formLogin(FormLoginConfigurer::disable)
+    .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
+    .build();
+  }
 
-        return security
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-                .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec
-                        .anyExchange().authenticated()
-                )
-                .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
-                .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.FIRST)
-                .addFilterAfter(apiKeyAuthenticationFilter,SecurityWebFiltersOrder.FIRST)
-                .build();
-    }
+  @Bean
+  UserDetailsService userDetailsService(){
+    return username->{
+      return null;
+    };
+  }
+
 }

@@ -1,8 +1,9 @@
 import { Component, effect, signal, WritableSignal } from '@angular/core';
-import { Router } from '@angular/router';
-import { Users, UserService } from '../services/users.service';
-import { ButtonComponent } from './button.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { UserService } from '../services/users.service';
 import { AdminNavigationComponent } from './admin-navigation.component';
+import { ButtonComponent } from './button.component';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'profile-component',
@@ -24,7 +25,7 @@ import { AdminNavigationComponent } from './admin-navigation.component';
       (onClick)="logout()"
     >
     </button-component>
-    <p class="uppercase cursor-pointer">
+    <p class="cursor-pointer">
       {{ userData()?.username }}
     </p>
     <div class="h-12 w-12 bg-blue-300 p-2 rounded-full relative cursor-pointer">
@@ -32,7 +33,7 @@ import { AdminNavigationComponent } from './admin-navigation.component';
         {{ userData()?.initials }}
       </span>
     </div>
-    }@else { @if(router.url.includes('/auth')) { @if(router.url ===
+    }@else { @if(activatedRoute.url.includes('/auth')) { @if(router.url ===
     '/auth/login') {
     <button-component
       [buttonName]="'Sign Up'"
@@ -62,22 +63,14 @@ export class ProfileComponent {
     username: string;
   } | null> = signal(null);
 
-  constructor(private userService: UserService, protected router: Router) {
-    effect(() => {
-      const user = this.userService.user();
-      if (user === null) {
-        this.userData.set(null);
-        return;
-      }
-      this.userData.set({
-        initials: user.firstName[0] + user.lastName[0],
-        username: user.username,
-      });
-    });
-  }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    protected activatedRoute: ActivatedRoute
+  ) {}
 
   logout() {
-    this.userService.logout();
+    this.authService.removeAuthorization();
     this.router.navigateByUrl('/auth');
   }
 }
@@ -85,15 +78,17 @@ export class ProfileComponent {
 @Component({
   selector: 'navbar-compoenent',
   template: `
-    <nav class="flex justify-between items-center font-bold px-2 py-2">
+    <nav
+      class="flex justify-between items-center font-bold p-4 margin_x bg-tertiary mt-[20px] rounded-2xl"
+    >
       <p
         (click)="router.navigateByUrl('/home')"
-        class="uppercase text-2xl md:text-3xl lg:text-4xl cursor-pointer"
+        class="text-2xl md:text-3xl lg:text-4xl cursor-pointer text-white"
       >
-        Cromxt
+        Crom Bucket
       </p>
       @if(isUserAdmin()){
-        <admin-navigation></admin-navigation>
+      <admin-navigation></admin-navigation>
       }
       <profile-component></profile-component>
     </nav>
@@ -103,15 +98,5 @@ export class ProfileComponent {
 })
 export class NavbarComponent {
   isUserAdmin: WritableSignal<boolean> = signal(false);
-  constructor(protected router: Router, private userService: UserService) {
-    effect(() => {
-      const user = this.userService.user();
-      if (user === null) {
-        this.isUserAdmin.set(false);
-        return;
-      }
-      this.isUserAdmin.set(user.role === 'ADMIN');
-      
-    })
-  }
+  constructor(protected router: Router, private userService: UserService) {}
 }

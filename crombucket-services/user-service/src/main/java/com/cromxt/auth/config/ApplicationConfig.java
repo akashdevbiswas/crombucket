@@ -1,19 +1,6 @@
 package com.cromxt.auth.config;
 
-import com.cromxt.authentication.JwtService;
-import com.cromxt.auth.entity.Role;
-import com.cromxt.auth.entity.UserEntity;
-import com.cromxt.authentication.JwtServiceImpl;
-import com.cromxt.http.ResponseBuilder;
-import com.cromxt.http.ResponseBuilderImpl;
-import com.cromxt.auth.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.hc.client5.http.config.Configurable;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +12,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.cromxt.auth.entity.Role;
+import com.cromxt.auth.entity.UserEntity;
+import com.cromxt.auth.repository.UserRepository;
+import com.cromxt.authentication.JwtService;
+import com.cromxt.authentication.JwtServiceImpl;
+import com.cromxt.http.ResponseBuilder;
+import com.cromxt.http.ResponseBuilderImpl;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Configuration

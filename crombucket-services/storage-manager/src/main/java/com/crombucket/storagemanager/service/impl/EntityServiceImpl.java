@@ -1,165 +1,61 @@
 package com.crombucket.storagemanager.service.impl;
 
-import com.crombucket.storagemanager.dtos.requests.BucketRequest;
-import com.crombucket.storagemanager.dtos.requests.ClusterRequest;
-import com.crombucket.storagemanager.dtos.requests.RegionRequest;
-import com.crombucket.storagemanager.dtos.requests.StorageNodeRequest;
-import com.crombucket.storagemanager.dtos.response.BucketResponse;
-import com.crombucket.storagemanager.dtos.response.ClusterResponse;
-import com.crombucket.storagemanager.dtos.response.RegionResponse;
-import com.crombucket.storagemanager.dtos.response.StorageNodeResponse;
-import com.crombucket.storagemanager.entity.Clusters;
-import com.crombucket.storagemanager.entity.Regions;
-import com.crombucket.storagemanager.entity.StorageNode;
-import com.crombucket.storagemanager.exceptions.InvalidRequestException;
-import com.crombucket.storagemanager.exceptions.MongoDBConnectionException;
-import com.crombucket.storagemanager.repository.Page;
-import com.crombucket.storagemanager.repository.RegionRepository;
-import com.crombucket.storagemanager.repository.ClustersRepository;
-import com.crombucket.storagemanager.repository.StorageNodeRepository;
-import com.crombucket.storagemanager.service.BucketService;
-import com.crombucket.storagemanager.service.EntityMapperService;
-import com.crombucket.storagemanager.service.RegionService;
-import com.crombucket.storagemanager.service.StorageClusterService;
-import com.crombucket.storagemanager.service.StorageNodeService;
-import com.crombucket.storagemanager.utility.SortingOrder;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 
-import java.util.List;
+import com.crombucket.common.dtos.PageResponse;
+import com.crombucket.storagemanager.dtos.requests.RegionRequest;
+import com.crombucket.storagemanager.dtos.response.RegionResponse;
+import com.crombucket.storagemanager.models.Regions;
+import com.crombucket.storagemanager.repository.RegionsRepository;
+import com.crombucket.storagemanager.service.EntityMapper;
+import com.crombucket.storagemanager.service.RegionsService;
+import com.crombucket.storagemanager.utils.SortOrder;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
-public class EntityServiceImpl implements StorageClusterService, StorageNodeService, RegionService, BucketService {
+public class EntityServiceImpl implements RegionsService {
 
-    private static final String DEFAULT_ERROR_MESSAGE = "Some error occurred while performing a DB operation with message: ";
+  private final EntityMapper entityMapper;
+  private final RegionsRepository regionsRepository;
 
-    private final EntityMapperService entityMapperService;
-    private final ClustersRepository storageClustersRepository;
-    private final StorageNodeRepository storageNodeRepository;
-    private final RegionRepository regionRepository;
+  @Override
+  public PageResponse<RegionResponse> getRegionsBy(Integer page, Integer size, String search, SortOrder sort) {
 
-    @Override
-    public Mono<ClusterResponse> createNewCluster(String regionCode, ClusterRequest clusterRequest) {
-        Mono<Regions> regionsMono = regionRepository.findRegionByRegionCode(regionCode);
-        return regionsMono
-                .switchIfEmpty(Mono.error(
-                        new InvalidRequestException("Region with regionCode: " + regionCode + " does not exist.")))
-                .flatMap(regions -> {
-                    Clusters storageCluster = entityMapperService.createClusterEntityFromClusterRequest(regions,
-                            clusterRequest);
-                    return storageClustersRepository.saveClusters(storageCluster)
-                            .map(entityMapperService::createClustersResponseFromStorageCluster);
-                });
+    Pageable pageable = PageRequest.of(page, size, sort.getSort("regionName"));
+
+    Page<Regions> regionPage = null;
+
+    if (search == null || search.isBlank()) {
+      regionPage = regionsRepository.findAll(pageable);
+    } else {
+      regionPage = regionsRepository.findByRegionNameOrRegionCodeContainingIgnoreCase(search, search, pageable);
     }
+    List<RegionResponse> regionsData = regionPage.getContent().stream()
+        .map(entityMapper::createRegionResponseFromRegions).toList();
 
-    @Override
-    public Mono<Page<ClusterResponse>> getAllClusters(Integer pageNumber, Integer pageSize,
-            SortingOrder order, String regionCodeOrName) {
+    return entityMapper.createPageResponse(regionPage, regionsData);
+  }
 
-        final Sort sort = SortingOrder.getSortingOrder(order);
+  @Override
+  public List<RegionResponse> getAllRegions() {
+    return regionsRepository.findAll().stream().map(entityMapper::createRegionResponseFromRegions).toList();
+  }
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-
-        return storageClustersRepository
-                .findAllClusters(pageable, null)
-                .map(storageClustersPage -> {
-                    List<ClusterResponse> storageClusterResponseList = storageClustersPage.getContent().stream()
-                            .map(entityMapperService::createClustersResponseFromStorageCluster).toList();
-                    return entityMapperService.pageResponseBuilder(storageClusterResponseList, storageClustersPage);
-                });
-    }
-
-    @Override
-    public Mono<Long> deleteCluster(String clusterCode) {
-        return storageClustersRepository
-                .deleteCluster(clusterCode)
-                .onErrorResume(err -> {
-                    if (err instanceof InvalidRequestException) {
-                        log.error(err.getMessage());
-                        return Mono.error(err);
-                    } else if (err instanceof MongoDBConnectionException) {
-                        log.error("Delete operation is un-successful.");
-                        return Mono.error(err);
-                    }
-                    return Mono.error(
-                            new MongoDBConnectionException(DEFAULT_ERROR_MESSAGE + "Unsuccessful delete operation."));
-                });
-    }
-
-    @Override
-    public Mono<ClusterResponse> getClusterById(String clusterCode) {
-        return storageClustersRepository.findClusterByClusterCode(clusterCode)
-                .map(entityMapperService::createClustersResponseFromStorageCluster);
-    }
-
-    @Override
-    public Mono<StorageNodeResponse> createStorageNode(StorageNodeRequest nodeRequest) {
-        StorageNode newStorageNode = entityMapperService.createStorageNodeFromNodeRequest(nodeRequest);
-        return storageNodeRepository.save(newStorageNode)
-                .map(entityMapperService::createStorageResponseFromStorageNodeEntity);
-    }
-
-    @Override
-    public Mono<Page<StorageNodeResponse>> getAllStorageNodesByClusterCode(
-            String clusterCode,
-            Integer pageNumber,
-            Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return storageNodeRepository
-                .findAllStorageNodesByClusterCode(clusterCode, pageable)
-                .map(storageNodePage -> {
-                    List<StorageNode> content = storageNodePage.getContent();
-                    List<StorageNodeResponse> storageNodeResponseList = content.stream()
-                            .map(entityMapperService::createStorageResponseFromStorageNodeEntity).toList();
-                    return entityMapperService.pageResponseBuilder(storageNodeResponseList, storageNodePage);
-                });
-    }
-
-    @Override
-    public Mono<Long> deleteNode(String nodeCode) {
-        return storageNodeRepository.deleteStorageNode(nodeCode);
-    }
-
-    @Override
-    public Mono<BucketResponse> createBucket(BucketRequest bucketRequest) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createBucket'");
-    }
-
-    @Override
-    public Mono<RegionResponse> createRegion(RegionRequest regionRequest) {
-        Regions region = Regions.builder()
-                .regionName(regionRequest.regionName())
-                .regionCode(regionRequest.regionCode())
-                .build();
-        return regionRepository.saveRegion(region)
-                .map(entityMapperService::createRegionResponseFromRegions);
-    }
-
-    @Override
-    public Mono<RegionResponse> getRegionByCode(String regionCode) {
-        return regionRepository.findRegionByRegionCode(regionCode)
-                .map(entityMapperService::createRegionResponseFromRegions);
-    }
-
-    @Override
-    public Mono<Page<RegionResponse>> findAllRegions(String regionName, Integer pageNumber, Integer pageSize, SortingOrder order) {
-        return regionRepository
-                .findRegions(regionName,
-                        PageRequest.of(pageNumber, pageSize, SortingOrder.getSortingOrder(order)))
-                .map(regionPage -> {
-                    List<RegionResponse> regionResponseList = regionPage.getContent().stream()
-                            .map(entityMapperService::createRegionResponseFromRegions).toList();
-                    return entityMapperService.pageResponseBuilder(regionResponseList, regionPage);
-                });
-    }
+  @Override
+  public void saveRegion(RegionRequest regionRequest) {
+    Regions regions = Regions.builder()
+    .regionName(regionRequest.regionName())
+    .regionCode(regionRequest.regionCode())
+    .build();
+    regionsRepository.save(regions);
+  }
 
 }

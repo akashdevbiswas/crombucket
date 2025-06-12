@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { BrowserStorageService } from './browser-storage.service';
+import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -11,11 +13,14 @@ export class AuthService {
 
   constructor(
     private httpClient: HttpClient,
-    private storage: BrowserStorageService
+    private storage: BrowserStorageService,
+    @Inject(PLATFORM_ID) platformID: Object,
   ) {
-    const token = this.storage.get('Authorization');
-    if (token) {
-      this.authorization.set(token);
+    if(isPlatformBrowser(platformID)){
+      const token = this.storage.get('Authorization');
+      if(token) {
+        this.authorization.set(token);
+      }
     }
   }
 
