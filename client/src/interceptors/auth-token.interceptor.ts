@@ -2,7 +2,7 @@ import { HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 import { inject } from '@angular/core';
 
-export function authInterceptor(
+export function authTokenInterceptor(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn
 ) {

@@ -1,0 +1,124 @@
+<h1 class="section-heading">Sign Up</h1>
+<form class="form-container" [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+  <div class="input-group">
+    <div class="input">
+      <label class="input-label" for="username">Username</label>
+      <input
+        class="input-field"
+        type="text"
+        name="username"
+        id="username"
+        formControlName="username"
+        placeholder="akashbiswas"
+      />
+    </div>
+    <div class="input">
+      <label class="input-label" for="email">Email</label>
+      <input
+        class="input-field"
+        type="email"
+        name="email"
+        id="email"
+        formControlName="email"
+        placeholder="abc@xyz.com"
+      />
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="input">
+      <label class="input-label" for="password">Password</label>
+      <input
+        class="input-field"
+        type="password"
+        name="password"
+        id="password"
+        formControlName="password"
+        placeholder="Password"
+      />
+    </div>
+    <!-- This is manageable password field -->
+    <div class="input">
+      <label class="input-label" for="confirmPassword">Confirm Password</label>
+      <div
+        class="input-field flex items-center"
+        [ngClass]="{ 'input-focus': isFocus }"
+      >
+        <input
+          class="w-full outline-none font-medium placeholder:font-normal"
+          [type]="isPasswordView ? 'text' : 'password'"
+          name="confirmPassword"
+          id="confirmPassword"
+          formControlName="confirmPassword"
+          (focus)="onFucus()"
+          (blur)="onBlur()"
+          placeholder="Confirm Password"
+        />
+        <fa-icon
+          class="cursor-pointer h-full"
+          (click)="togglePasswordView()"
+          [icon]="isPasswordView ? faEyeSlash : faEye"
+        ></fa-icon>
+      </div>
+    </div>
+    <!-- Till here. -->
+  </div>
+  <div class="input-group">
+    <div class="input">
+      <label class="input-label" for="firstName">FirstName</label>
+      <input
+        class="input-field"
+        type="firstName"
+        name="firstName"
+        id="firstName"
+        formControlName="firstName"
+        placeholder="Jhon"
+      />
+    </div>
+    <div class="input">
+      <label class="input-label" for="lastName">Last Name</label>
+      <input
+        class="input-field"
+        type="password"
+        name="lastName"
+        id="lastName"
+        formControlName="lastName"
+        placeholder="Doe"
+      />
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="input">
+      <label class="input-label" for="dateOfBirth">Date Of Birth</label>
+      <input
+        class="input-field"
+        type="date"
+        name="dateOfBirth"
+        id="dateOfBirth"
+        formControlName="dateOfBirth"
+      />
+    </div>
+    <div class="input">
+      <label class="input-label" for="gender">Gender</label>
+      <select
+        class="input-field"
+        name="gender"
+        id="gender"
+        formControlName="gender"
+      >
+        <option disabled [selected]="true">Select Gender</option>
+        @for(eachOption of genderOptions; track $index){
+        <option>{{ eachOption }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <input
+    type="submit"
+    name="Sign Up"
+    id="sign-up"
+    class="btn btn__primary w-[40%] mx-auto mt-4"
+  />
+</form>

@@ -1,11 +1,11 @@
 {
-  "/user-service":{
-    "target": "http://localhost:8900",
+  "/server":{
+    "target": "http://localhost:8090",
     "logLevel": "debug",
     "changeOrigin": true,
     "secure": false,
     "pathRewrite": {
-      "^/user-service": ""
+      "^/server": ""
     }
   }
 }

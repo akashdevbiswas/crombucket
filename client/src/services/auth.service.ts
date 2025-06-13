@@ -1,35 +1,34 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
+import { afterNextRender, Injectable, signal } from '@angular/core';
 import { BrowserStorageService } from './browser-storage.service';
-import { isPlatformBrowser } from '@angular/common';
-import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
 
+  baseUrl = '/server/user-service/api/v1/auth';
+
   authorization = signal<string | null>(null);
 
   constructor(
     private httpClient: HttpClient,
     private storage: BrowserStorageService,
-    @Inject(PLATFORM_ID) platformID: Object,
   ) {
-    if(isPlatformBrowser(platformID)){
+    afterNextRender(() => {
       const token = this.storage.get('Authorization');
       if(token) {
         this.authorization.set(token);
       }
-    }
+    })
   }
 
   login(credentials: UserCredential) {
-    return this.httpClient.post<AuthToken>('/user-service/api/v1/auth', credentials)
+    return this.httpClient.post<AuthToken>(this.baseUrl, credentials)
   }
 
   register(userRequest: UserRequest) {
-    return this.httpClient.post('/user-service/api/v1/auth/register', userRequest,{
+    return this.httpClient.post(`${this.baseUrl}/register`, userRequest,{
       observe: 'response'
     });
   }

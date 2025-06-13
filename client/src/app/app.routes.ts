@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { HomePage } from '../pages/home/home.page';
 import { AuthPage } from '../pages/auth/auth.page';
-import { SignUpPage } from '../components/sign-up-form.component';
-import { SignInPage } from '../components/sign-in-form.component';
+import { SignUpPage } from '../components/sign-up/sign-up.component';
+import { SignInPage } from '../components/sign-in/sign-in.component';
 import { StorageNodeComponent } from '../components/storage-node.component';
 import { ClusterPage } from '../components/clusters.component';
 import { RegionComponent } from '../components/regions.component';
@@ -18,11 +18,11 @@ export const routes: Routes = [
     component: AuthPage,
     children: [
       {
-        path: 'login',
+        path: 'sign-in',
         component: SignInPage,
       },
       {
-        path: 'register',
+        path: 'sign-up',
         component: SignUpPage,
       },
       {

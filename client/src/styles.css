@@ -46,11 +46,11 @@ body {
   @apply outline-3 outline-secondary;
 }
 .btn{
-  @apply cursor-pointer min-w-fit px-2 py-1 md:py-2 font-medium;
+  @apply cursor-pointer min-w-fit  font-medium text-lg md:text-xl lg:text-2xl;
 }
 
 .btn__primary{
-  @apply bg-secondary text-base-white rounded-lg;
+  @apply bg-secondary text-base-white rounded-lg px-2 py-1 md:py-2;
 }
 .btn__secondary{
   @apply bg-base-white text-secondary;
