@@ -6,4 +6,3 @@ COPY /target/crombucket.jar .
 
 ENTRYPOINT [ "java", "-jar", "crombucket.jar" ]
 
-
