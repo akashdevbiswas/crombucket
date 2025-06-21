@@ -1,0 +1,8 @@
+services:
+  crombucket:
+    image: crombucket:latest
+    container_name: crombucket
+    build: 
+      context: .
+    ports:
+      - "8090:8080"
