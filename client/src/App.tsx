@@ -1,8 +1,23 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Auth from "./pages/Auth";
+import Home from "./pages/Home";
+
+const routes = createBrowserRouter([
+  {
+    path: "/",
+    element: <Home />,
+  },
+  {
+    path: "/auth",
+    element: <Auth />,
+  },
+]);
+
 
 const App = () => {
   return (
     <div>
-      <h1 className="text-3xl bg-red-100">Welcome to crombucket.</h1>
+      <RouterProvider router={routes} />
     </div>
   )
 }
