@@ -5,7 +5,9 @@ import Navbar from "../components/Navbar";
 const Home = () => {
   return (
     <Fragment>
-      <Navbar />
+      <header className="mt-[20px]">
+        <Navbar />
+      </header>
       <Outlet />
     </Fragment>
   );

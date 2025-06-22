@@ -1,8 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import "tailwindcss";
 
-@theme{
+@theme {
+  /* Colors */
   --color-text: #3e3e3e;
   --color-primary: #4b60e6;
   --color-secondary: #3b24e9;
   --color-black: #090329;
+  /* Fonts */
+  --font-inter: "Inter", sans-serif;
+}
+
+.horizontal-layout {
+  @apply mx-auto w-[90%] md:w-[94%] lg:w-[97%];
 }
