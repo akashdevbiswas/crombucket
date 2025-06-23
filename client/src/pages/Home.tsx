@@ -8,11 +8,11 @@ const Home = () => {
       <header className="mt-[20px] horizontal-layout">
         <Navbar />
       </header>
-      <main className="mt-[20px] flex horizontal-layout h-10/12  p-[1px]">
+      <main className="mt-[20px] flex horizontal-layout h-10/12 gap-4">
         <div className="w-[20%] h-full">
-          <SideNavbar/>
+          <SideNavbar />
         </div>
-        <div className="w-[80%] h-full">
+        <div className="w-full h-full">
           <Outlet />
         </div>
       </main>
