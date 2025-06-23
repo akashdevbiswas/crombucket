@@ -1,7 +1,7 @@
 
 const Navbar = () => {
   return (
-    <nav className="bg-primary horizontal-layout rounded-2xl p-4 flex items-center justify-between">
+    <nav className="bg-primary w-full rounded-2xl p-4 flex items-center justify-between">
       <h1 className="text-xl font-medium md:text-3xl md:font-bold text-white">
         Crombucket
       </h1>

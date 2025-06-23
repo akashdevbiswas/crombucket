@@ -14,3 +14,13 @@
 .horizontal-layout {
   @apply mx-auto w-[90%] md:w-[94%] lg:w-[97%];
 }
+.nav-links a{
+  @apply w-full text-center p-4 text-xl font-medium rounded-2xl;
+}
+
+.nav-links a:hover{
+  @apply bg-[#E8E6E6];
+}
+.active{
+  @apply bg-[#E8E6E6];
+}
